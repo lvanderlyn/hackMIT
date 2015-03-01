@@ -22,13 +22,22 @@ class Robot:
     def __init__(self):
         self.motors = [1, 2, 3]
 
+    def findPort(self):
+        ports = glob.glob("/dev/tty[A-Za-z]*")
+        for port in ports:
+            if 'ACM' in port:
+                return port
+
     def openPort(self):
-        ser = serial.Serial('/dev/ttyACM0', 9600, timeout = 1)
+        ser = serial.Serial(self.findPort(), 9600, timeout=1)
         print 'Opened port' + ser.name 
         self.port = ser
+
+    def write(self, message):
+        self.port.write(message)
+
     def closePort(self):
         self.port.close()
-        print 'Closed port' + ser.name
 
 class Move_button(object):
     """
@@ -65,8 +74,6 @@ class Move(object):
 class Model:
     def __init__(self, robot):
         self.robot = robot
-        self.robot.openPort()
-
         #Dock/trash/run
         self.dock = pygame.Rect(120, 100, 20, 60)
         self.trash = pygame.Rect(10, 750, 40, 40)
@@ -84,7 +91,7 @@ class Model:
         self.instructions = sorted(self.instructions, key= lambda instr: instr.rect.x)
         for instr in self.instructions:
             print("direction: ", instr.direction, "motors: ", instr.motors, "duration: ", instr.duration)
-            self.robot.ser.write(instr.direction, instr.motor, instr.duration)
+            self.robot.write(str([instr.direction, instr.motors, instr.duration]))
 
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -202,6 +209,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     r = Robot()
+    r.openPort()
     model = Model(r)
     view = View(model,screen)
     controller = Controller(model)
@@ -227,4 +235,4 @@ if __name__ == '__main__':
         pygame.display.flip()
         view.draw()        
         clock.tick(60)
-        closePort()
+    model.robot.closePort()
