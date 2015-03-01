@@ -76,8 +76,8 @@ class Model:
         self.robot = robot
         #Dock/trash/run
         self.dock = pygame.Rect(120, 100, 20, 60)
-        self.trash = pygame.Rect(10, 750, 40, 40)
-        self.run_btn = pygame.Rect(700, 750, 80, 40)
+        self.trash = pygame.Rect(10, 550, 40, 40)
+        self.run_btn = pygame.Rect(700, 550, 80, 40)
 
         #Buttons
         self.fwd_btn = Move_button(self, self.robot, [0,1], direction=0, duration=1, rect=(10, 10, 60, 60), name='Straight')
@@ -114,8 +114,8 @@ class View:
         """Draws updated view every 0.001 seconds, or as defined by sleep at end of main loop
         Does not do any updating on its own, takes model objects and displays        
         """
-        self.screen.fill(pygame.Color(0,0,0)) #Background
-        pygame.draw.rect(screen, pygame.Color(0, 0, 0), pygame.Rect(0, 800, 300, 100)) 
+        self.screen.fill(pygame.Color(50,50,50)) #Background
+        pygame.draw.rect(screen, pygame.Color(0, 0, 0), pygame.Rect(0, 600, 300, 100)) 
 
         for btn in self.model.btns:
             pygame.draw.rect(screen, pygame.Color(120, 120, 120), btn.rect)
@@ -205,7 +205,7 @@ class Controller:
 
 if __name__ == '__main__':
     pygame.init()   #initializes our game
-    size = (800, 800)
+    size = (800, 600)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     r = Robot()
