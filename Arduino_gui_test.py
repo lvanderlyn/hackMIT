@@ -13,6 +13,8 @@ import syslog
 import serial
 import time
 
+
+
 class Robot:
     """
         Robot object represents the actual hardware (arduino) being used
@@ -20,22 +22,22 @@ class Robot:
     def __init__(self):
         self.motors = [1, 2, 3]
 
-    # def findPort(self):
-    #     ports = glob.glob("/dev/tty[A-Za-z]*")
-    #     for port in ports:
-    #         if 'ACM' in port:
-    #             return port
+    def findPort(self):
+        ports = glob.glob("/dev/tty[A-Za-z]*")
+        for port in ports:
+            if 'ACM' in port:
+                return port
 
-    # def openPort(self):
-    #     ser = serial.Serial(self.findPort(), 9600, timeout=1)
-    #     print 'Opened port' + ser.name 
-    #     self.port = ser
+    def openPort(self):
+        ser = serial.Serial(self.findPort(), 9600, timeout=1)
+        print 'Opened port' + ser.name 
+        self.port = ser
 
     def write(self, message):
         self.port.write(message)
 
-    # def closePort(self):
-    #     self.port.close()
+    def closePort(self):
+        self.port.close()
 
 class Move_button(object):
     """
@@ -51,7 +53,7 @@ class Move_button(object):
         self.name = name
 
     def create_object(self):
-        self.model.instructions.append(Move(self.robot, self.motors, self.direction, self.duration, self.rect, self.name))
+        self.model.instructions.append(Move(self.robot, self.direction, self.duration, self.rect, self.name))
 
         
 class Move(object):
@@ -76,26 +78,20 @@ class Model:
         self.run_btn = pygame.Rect(700, 550, 80, 40)
 
         #Buttons
-        self.fwd_btn = Move_button(self, self.robot, direction='f', duration=1, rect=(10, 10, 60, 60), name='Straight')
-        self.right_bn = Move_button(self, self.robot, direction='r', duration=1, rect=(10, 80, 60, 60), name='R turn')
-        self.left_bn = Move_button(self, self.robot, direction='l', duration=1, rect=(10, 150, 60, 60), name='L turn')
-        self.arm_bn = Move_button(self, self.robot, direction='u', duration=1, rect=(10, 220, 60, 60), name='Arm up')
-        self.arm_d_bn = Move_button(self, self.robot, direction='d', duration=1, rect=(10, 290, 60, 60), name='Arm dn')
+        self.fwd_btn = Move_button(self, self.robot, direction='f', duration=1, rect=(10, 9, 65, 62), name='Straight')
+        self.right_bn = Move_button(self, self.robot, direction='r', duration=1, rect=(10, 81, 65, 62), name='  R turn')
+        self.left_bn = Move_button(self, self.robot, direction='l', duration=1, rect=(10, 151, 65, 62), name='  L turn')
+        self.arm_bn = Move_button(self, self.robot, direction='u', duration=1, rect=(10, 221, 65, 62), name=' Arm up')
+        self.arm_d_bn = Move_button(self, self.robot, direction='d', duration=1, rect=(10, 291, 65, 62), name=' Arm dn')
         self.btns = [self.fwd_btn, self.right_bn, self.left_bn, self.arm_bn, self.arm_d_bn]
         self.instructions = []
 
     def execute(self):
         self.instructions = sorted(self.instructions, key= lambda instr: instr.rect.x)
         for instr in self.instructions:
-<<<<<<< HEAD
-            print("direction: ", instr.direction, "motors: ", instr.motors, "duration: ", instr.duration)
-        #     self.robot.write(str([instr.direction, instr.motors, instr.duration]), '&')
-        # self.robot.write('/')
-=======
             print("direction: ", instr.direction, "duration: ", instr.duration)
-            self.robot.write(str([instr.direction, instr.duration]), '&')
+            self.robot.write(str([instr.direction, instr.duration,'&']))
         self.robot.write('/')
->>>>>>> 60343f9faf6c5d2af5a1ca7e6b8afa95eb74cfd7
 
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -112,7 +108,7 @@ class View:
 
         size = 16
         
-        return pygame.font.SysFont('Arial', size)
+        return pygame.font.SysFont('Arial', size, bold=True, italic=False)
 
     def draw(self):
         """Draws updated view every 0.001 seconds, or as defined by sleep at end of main loop
@@ -191,7 +187,7 @@ class Controller:
                 element.rect.x = mouseX - element.rect.size[0] // 2
 
         #Only allows for one instruction to be created per button press
-        for btn in self.model.btns:                                                      
+        for btn in self.model.btns:                                                         
             if btn.rect.collidepoint((mouseX, mouseY)) and self.mouse_held:
                 self.btn_hold_time += 1
                 if self.btn_hold_time <=1:    
@@ -200,7 +196,7 @@ class Controller:
                 self.btn_hold_time = 0
         if model.run_btn.collidepoint((mouseX, mouseY)) and self.mouse_held:
             self.btn_hold_time += 1
-            if self.btn_hold_time <=1:
+            if self.btn_hold_time <=1:    
                 model.execute()
             elif not self.mouse_held:
                 self.btn_hold_time = 0
@@ -213,7 +209,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     r = Robot()
-    #r.openPort()
+    r.nPort()
     model = Model(r)
     view = View(model,screen)
     controller = Controller(model)
@@ -239,4 +235,4 @@ if __name__ == '__main__':
         pygame.display.flip()
         view.draw()        
         clock.tick(60)
-    #model.robot.closePort()
+    model.robot.closePort()
