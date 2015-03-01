@@ -91,7 +91,8 @@ class Model:
         self.instructions = sorted(self.instructions, key= lambda instr: instr.rect.x)
         for instr in self.instructions:
             print("direction: ", instr.direction, "motors: ", instr.motors, "duration: ", instr.duration)
-            self.robot.write(str([instr.direction, instr.motors, instr.duration]))
+            self.robot.write(str([instr.direction, instr.motors, instr.duration]), '&')
+        self.robot.write('/')
 
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
