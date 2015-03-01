@@ -13,8 +13,6 @@ import syslog
 import serial
 import time
 
-
-
 class Robot:
     """
         Robot object represents the actual hardware (arduino) being used
@@ -22,22 +20,22 @@ class Robot:
     def __init__(self):
         self.motors = [1, 2, 3]
 
-    def findPort(self):
-        ports = glob.glob("/dev/tty[A-Za-z]*")
-        for port in ports:
-            if 'ACM' in port:
-                return port
+    # def findPort(self):
+    #     ports = glob.glob("/dev/tty[A-Za-z]*")
+    #     for port in ports:
+    #         if 'ACM' in port:
+    #             return port
 
-    def openPort(self):
-        ser = serial.Serial(self.findPort(), 9600, timeout=1)
-        print 'Opened port' + ser.name 
-        self.port = ser
+    # def openPort(self):
+    #     ser = serial.Serial(self.findPort(), 9600, timeout=1)
+    #     print 'Opened port' + ser.name 
+    #     self.port = ser
 
     def write(self, message):
         self.port.write(message)
 
-    def closePort(self):
-        self.port.close()
+    # def closePort(self):
+    #     self.port.close()
 
 class Move_button(object):
     """
@@ -91,8 +89,8 @@ class Model:
         self.instructions = sorted(self.instructions, key= lambda instr: instr.rect.x)
         for instr in self.instructions:
             print("direction: ", instr.direction, "motors: ", instr.motors, "duration: ", instr.duration)
-            self.robot.write(str([instr.direction, instr.motors, instr.duration]), '&')
-        self.robot.write('/')
+        #     self.robot.write(str([instr.direction, instr.motors, instr.duration]), '&')
+        # self.robot.write('/')
 
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -188,7 +186,7 @@ class Controller:
                 element.rect.x = mouseX - element.rect.size[0] // 2
 
         #Only allows for one instruction to be created per button press
-        for btn in self.model.btns:                                                         
+        for btn in self.model.btns:                                                      
             if btn.rect.collidepoint((mouseX, mouseY)) and self.mouse_held:
                 self.btn_hold_time += 1
                 if self.btn_hold_time <=1:    
@@ -197,7 +195,7 @@ class Controller:
                 self.btn_hold_time = 0
         if model.run_btn.collidepoint((mouseX, mouseY)) and self.mouse_held:
             self.btn_hold_time += 1
-            if self.btn_hold_time <=1:    
+            if self.btn_hold_time <=1:
                 model.execute()
             elif not self.mouse_held:
                 self.btn_hold_time = 0
@@ -210,7 +208,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     r = Robot()
-    r.openPort()
+    #r.openPort()
     model = Model(r)
     view = View(model,screen)
     controller = Controller(model)
@@ -236,4 +234,4 @@ if __name__ == '__main__':
         pygame.display.flip()
         view.draw()        
         clock.tick(60)
-    model.robot.closePort()
+    #model.robot.closePort()
