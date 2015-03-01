@@ -209,7 +209,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     r = Robot()
-    r.nPort()
+    r.openPort()
     model = Model(r)
     view = View(model,screen)
     controller = Controller(model)
