@@ -43,11 +43,10 @@ class Move_button(object):
     """
         When pushed generates a move object 
     """
-    def __init__(self, model, robot, motors, direction, duration, rect, name=''):
+    def __init__(self, model, robot, direction, duration, rect, name=''):
         self.is_pushed = False
         self.rect = pygame.Rect(rect)
         self.robot = robot
-        self.motors = motors
         self.direction = direction
         self.duration = duration
         self.model = model
@@ -61,8 +60,7 @@ class Move(object):
     """
         Base for robot movement
     """
-    def __init__(self, robot, motors, direction=1, duration=1, rect=(10,10,40,40), name=''):
-        self.motors = [robot.motors[i] for i in motors]
+    def __init__(self, robot, direction=1, duration=1, rect=(10,10,40,40), name=''):
         self.direction = direction
         self.duration = duration
         self.rect = pygame.Rect(rect)
@@ -80,18 +78,19 @@ class Model:
         self.run_btn = pygame.Rect(700, 550, 80, 40)
 
         #Buttons
-        self.fwd_btn = Move_button(self, self.robot, [0,1], direction=0, duration=1, rect=(10, 10, 60, 60), name='Straight')
-        self.right_bn = Move_button(self, self.robot, [0,1], direction=1, duration=1, rect=(10, 80, 60, 60), name='R turn')
-        self.left_bn = Move_button(self, self.robot, [0,1], direction=-1, duration=1, rect=(10, 150, 60, 60), name='L turn')
-        self.arm_bn = Move_button(self, self.robot, [2], direction=1, duration=1, rect=(10, 220, 60, 60), name='Arm')
-        self.btns = [self.fwd_btn, self.right_bn, self.left_bn, self.arm_bn]
+        self.fwd_btn = Move_button(self, self.robot, direction='f', duration=1, rect=(10, 10, 60, 60), name='Straight')
+        self.right_bn = Move_button(self, self.robot, direction='r', duration=1, rect=(10, 80, 60, 60), name='R turn')
+        self.left_bn = Move_button(self, self.robot, direction='l', duration=1, rect=(10, 150, 60, 60), name='L turn')
+        self.arm_bn = Move_button(self, self.robot, direction='u', duration=1, rect=(10, 220, 60, 60), name='Arm up')
+        self.arm_d_bn = Move_button(self, self.robot, direction='d', duration=1, rect=(10, 290, 60, 60), name='Arm dn')
+        self.btns = [self.fwd_btn, self.right_bn, self.left_bn, self.arm_bn, self.arm_d_bn]
         self.instructions = []
 
     def execute(self):
         self.instructions = sorted(self.instructions, key= lambda instr: instr.rect.x)
         for instr in self.instructions:
-            print("direction: ", instr.direction, "motors: ", instr.motors, "duration: ", instr.duration)
-            self.robot.write(str([instr.direction, instr.motors, instr.duration]), '&')
+            print("direction: ", instr.direction, "duration: ", instr.duration)
+            self.robot.write(str([instr.direction, instr.duration]), '&')
         self.robot.write('/')
 
 class View:
